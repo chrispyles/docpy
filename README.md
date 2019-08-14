@@ -4,10 +4,10 @@ This package auto-generates Markdown documentation from Python files.
 
 ## Installation
 
-This package is not hosted in PyPI, but can be installed using pip:
+This package is meant to be added as a git submodule:
 
 ```
-pip install git+https://github.com/chrispyles/pydocs
+git submodule add https://github.com/chrispyles/pydocs
 ```
 
 ## Usage
