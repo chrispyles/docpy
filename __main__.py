@@ -9,6 +9,7 @@ import sys
 import glob
 import argparse
 import re
+import os
 
 # create CLI argument parser and extract arguments
 parser = argparse.ArgumentParser(description="generate Markdown documentation for Python files")
@@ -18,6 +19,17 @@ parser.add_argument("-s", "--sub", dest="sub", help="file with ::DOCUMENTATION::
 parser.add_argument("-t", "--template", dest="temp", help="template file with ::DOCUMENTATION:: tag, needs OUT argument")
 parser.add_argument(dest="files", nargs=argparse.REMAINDER, help="files to be documented")
 namespace = vars(parser.parse_args())
+
+if len(namespace["files"]) == 1 and "*" in namespace["files"][0]:
+	folder = namespace["files"][0]
+	name_regex = r"\/[\w*]*\.\w+"
+	folder = re.sub(name_regex, "", folder)
+	if folder not in os.getcwd():
+		old_folder = os.getcwd()
+		os.chdir(folder)
+	file_names = glob.glob(namespace["files"])
+	namespace["files"] = file_names
+
 
 docstrings, classes, methods = {}, [], []
 for file in namespace["files"]:
@@ -84,3 +96,9 @@ elif namespace["out"]:
 
 else:
 	print(markdown)
+
+try:
+	os.chdir(old_folder)
+	print("Docs generated.")
+except NameError:
+	print("Docs generated.")
