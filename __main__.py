@@ -20,33 +20,51 @@ parser.add_argument("-t", "--template", dest="temp", help="template file with ::
 parser.add_argument(dest="files", nargs=argparse.REMAINDER, help="files to be documented")
 namespace = vars(parser.parse_args())
 
-if len(namespace["files"]) == 1 and "*" in namespace["files"][0]:
-	folder = namespace["files"][0]
-	name_regex = r"\/[\w*]*\.\w+"
-	folder = re.sub(name_regex, "", folder)
-	if folder not in os.getcwd():
-		old_folder = os.getcwd()
-		os.chdir(folder)
-	file_names = glob.glob(namespace["files"])
-	namespace["files"] = file_names
+folder = namespace["files"][0]
+name_regex = r"\/[\w*]*\.\w+"
+folder = re.sub(name_regex, "", folder)
+try:
+	old_folder = os.getcwd()
+	os.chdir(folder)
+	changed_dir = True
+except FileNotFoundError:
+	pass
 
+if changed_dir:
+	files = []
+	for file in namespace["files"]:
+		match = re.search(name_regex, file)
+		if match:
+			files += [match[0][1:]]
+		else:
+			files += [file]
+	namespace["files"] = files
+
+print(os.getcwd())
 
 docstrings, classes, methods = {}, [], []
 for file in namespace["files"]:
-	environment = runpy.run_path(file)
-	objects = {name : environment[name] for name in environment if name[0] != "_"}
-	for name in objects:
-		obj = objects[name]
-		string = inspect.getdoc(obj)
-		docstrings[file[:-3] + "." + name] = string
-		if inspect.isclass(obj):
-			classes += [file[:-3] + "." + name]
-			class_methods = [m for m in dir(obj) if callable(getattr(obj, m)) and m[0] != "_"]
-			for method_name in class_methods:
-				method = getattr(obj, method_name)
-				docstrings[file[:-3] + "." + name + "." + method_name] = inspect.getdoc(method)
-				methods += [file[:-3] + "." + name + "." + method_name]
-	print(file + " executed.")
+	if file[0] != "_":
+		environment = runpy.run_path(file)
+		objects = {name : environment[name] for name in environment if name[0] != "_"}
+		for name in objects:
+			obj = objects[name]
+			string = inspect.getdoc(obj)
+			docstrings[file[:-3] + "." + name] = string
+			if inspect.isclass(obj):
+				classes += [file[:-3] + "." + name]
+				class_methods = [m for m in dir(obj) if callable(getattr(obj, m)) and m[0] != "_"]
+				for method_name in class_methods:
+					method = getattr(obj, method_name)
+					docstrings[file[:-3] + "." + name + "." + method_name] = inspect.getdoc(method)
+					methods += [file[:-3] + "." + name + "." + method_name]
+
+if changed_dir:
+	os.chdir(old_folder)
+
+print(docstrings)
+print(classes)
+print(methods)
 
 markdown = ""
 prevClass = False
@@ -97,9 +115,3 @@ elif namespace["out"]:
 
 else:
 	print(markdown)
-
-try:
-	os.chdir(old_folder)
-	print("Docs generated.")
-except NameError:
-	print("Docs generated.")
