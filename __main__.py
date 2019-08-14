@@ -46,6 +46,7 @@ for file in namespace["files"]:
 				method = getattr(obj, method_name)
 				docstrings[file[:-3] + "." + name + "." + method_name] = inspect.getdoc(method)
 				methods += [file[:-3] + "." + name + "." + method_name]
+	print(file + " executed.")
 
 markdown = ""
 prevClass = False
