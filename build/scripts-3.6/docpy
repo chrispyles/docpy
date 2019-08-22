@@ -1,3 +1,5 @@
+#!python
+
 ##########################################
 ##### Python Documentation Generator #####
 #####         by Chris Pyles         #####
@@ -11,7 +13,7 @@ import argparse
 import re
 import os
 
-from .regexes import *
+from docpy.regexes import *
 
 # create CLI argument parser and extract arguments
 parser = argparse.ArgumentParser(description="generate Markdown documentation for Python files")

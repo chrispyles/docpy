@@ -2,9 +2,17 @@
 
 This package auto-generates Markdown documentation from Python files.
 
+## Installation
+
+This package is installed using pip:
+
+```
+pip install docpy
+```
+
 ## Usage
 
-This package is used from the command line via module execution:
+This package is used from the command line:
 
 ```
 docpy ...
@@ -13,7 +21,7 @@ docpy ...
 The package help entry is given below.
 
 ```
-usage: [-h] [-a APPEND] [-o OUT] [-s SUB] [-t TEMP] ...
+usage: docpy [-h] [-a APPEND] [-o OUT] [-s SUB] [-t TEMP] ...
 
 generate Markdown documentation for Python files
 
@@ -30,3 +38,9 @@ optional arguments:
                         template file with ::DOCUMENTATION:: tag, needs OUT
                         argument
 ```
+
+## Changelog
+
+**v0.1.0:**
+
+* Initial release
