@@ -39,7 +39,25 @@ optional arguments:
                         argument
 ```
 
+### Templates
+
+You can define a Markdown template in which your documentation will be placed using the `-t` flag, which must be used in conjunction with the `-o` flag. In your template, just put `::DOCUMENTATION::` where you want the documentation to be placed. For example,
+
+```markdown
+# This is a markdown file.
+
+My docs are below:
+
+::DOCUMENTATION::
+
+_this concludes the documentation._
+```
+
 ## Changelog
+
+**v0.1.1:**
+
+* Fixed formatting error in docstrings
 
 **v0.1.0:**
 

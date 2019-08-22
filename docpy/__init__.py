@@ -57,7 +57,7 @@ for file in namespace["files"]:
 		if signature[0] == "_":
 			continue
 
-		docstring = re.sub(r"[\t\"\n]", "", obj.docstring)
+		docstring = re.sub(r"[\t\"]", "", obj.docstring)
 
 		if obj.parent:
 			parent = re.sub(r"[\t\"\n]", "", obj.parent)
