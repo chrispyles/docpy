@@ -1,27 +1,19 @@
-# pydocs
+# docpy
 
 This package auto-generates Markdown documentation from Python files.
-
-## Installation
-
-This package is meant to be added as a git submodule:
-
-```
-git submodule add https://github.com/chrispyles/pydocs
-```
 
 ## Usage
 
 This package is used from the command line via module execution:
 
 ```
-python -m pydocs ...
+docpy ...
 ```
 
 The package help entry is given below.
 
 ```
-usage: __main__.py [-h] [-a APPEND] [-o OUT] [-s SUB] [-t TEMP] ...
+usage: [-h] [-a APPEND] [-o OUT] [-s SUB] [-t TEMP] ...
 
 generate Markdown documentation for Python files
 

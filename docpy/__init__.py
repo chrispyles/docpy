@@ -11,6 +11,8 @@ import argparse
 import re
 import os
 
+from regexes import *
+
 # create CLI argument parser and extract arguments
 parser = argparse.ArgumentParser(description="generate Markdown documentation for Python files")
 parser.add_argument("-a", "--append", dest="append", help="file to which to append generated Markdown")
@@ -40,31 +42,41 @@ if changed_dir:
 			files += [file]
 	namespace["files"] = files
 
-print(os.getcwd())
+# print(os.getcwd())
 
 docstrings, classes, methods = {}, [], []
 for file in namespace["files"]:
-	if file[0] != "_":
-		environment = runpy.run_path(file)
-		objects = {name : environment[name] for name in environment if name[0] != "_"}
-		for name in objects:
-			obj = objects[name]
-			string = inspect.getdoc(obj)
-			docstrings[file[:-3] + "." + name] = string
-			if inspect.isclass(obj):
-				classes += [file[:-3] + "." + name]
-				class_methods = [m for m in dir(obj) if callable(getattr(obj, m)) and m[0] != "_"]
-				for method_name in class_methods:
-					method = getattr(obj, method_name)
-					docstrings[file[:-3] + "." + name + "." + method_name] = inspect.getdoc(method)
-					methods += [file[:-3] + "." + name + "." + method_name]
+	file_name = file[:-3]
+
+	with open(file) as f:
+		objects = parse_file(f)
+
+	for obj in objects:
+		signature = re.search(r" (\w+(\(.*\))?):", obj.signature)[1]
+
+		if signature[0] == "_":
+			continue
+
+		docstring = re.sub(r"[\t\"\n]", "", obj.docstring)
+
+		if obj.parent:
+			parent = re.sub(r"[\t\"\n]", "", obj.parent)
+			parent = re.search(r" (\w+(\(.*\))?):", parent)[1]
+			docstrings[file_name + "." + parent + "." + signature] = docstring
+			methods += [file_name + "." + parent + "." + signature]
+
+		else:
+			docstrings[file_name + "." + signature] = docstring
+
+			if re.match(r"class", obj.signature):
+				classes += [file_name + "." + signature]
 
 if changed_dir:
 	os.chdir(old_folder)
 
-print(docstrings)
-print(classes)
-print(methods)
+# print(docstrings)
+# print(classes)
+# print(methods)
 
 markdown = ""
 prevClass = False
